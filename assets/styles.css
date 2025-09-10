@@ -205,13 +205,17 @@ footer {
 }
 .plans-table th, .plans-table td {
   border: 1px solid var(--color-border);
-  padding: 12px 10px;
+  padding: 8px 8px;
   text-align: center;
+  vertical-align: middle;
+  min-height: 48px;
 }
 .plans-table thead th {
   background: var(--color-primary-dark);
   color: #fff;
-  font-weight: 700;
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
 }
 .plans-table tbody th[scope="row"] {
   background: #f3ecff; /* light purple tint */
@@ -229,19 +233,26 @@ footer {
   text-decoration: none;
   background: var(--color-success);
   color: var(--color-success-contrast);
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 0.95rem;
 }
 .cell-link:focus-visible { outline: 3px solid rgba(212, 175, 55, 0.5); outline-offset: 2px; }
+.cell-link:hover { filter: brightness(0.97); }
 .cell-empty {
   color: var(--color-muted);
+  font-size: 0.85rem;
 }
 .cell-name {
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 1rem;
 }
 
 /* Stacked names inside a cell */
 .cell-stack { display: grid; gap: 2px; justify-items: center; }
 .cell-stack .cell-name { display: block; }
+
+/* Active cell highlight when selected in viewer */
+.active-cell { outline: 2px solid var(--color-primary); outline-offset: -2px; background: #f3ecff; }
 
 /* Two-column layout: table + viewer */
 .layout {
@@ -288,12 +299,13 @@ footer {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 10px;
+  padding: 8px 12px;
   border-radius: 14px;
   border: 1px solid var(--color-border);
   background: #fafafa;
   cursor: pointer;
   white-space: nowrap;
+  font-weight: 600;
 }
 .tab.active { background: #f3ecff; border-color: var(--color-primary); }
 .tab .tab-title { font-weight: 600; }

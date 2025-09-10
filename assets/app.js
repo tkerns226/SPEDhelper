@@ -204,6 +204,19 @@
       return url;
     }
 
+    var activeCell = null;
+    function markActiveCellByUrl(url){
+      try {
+        var links = document.querySelectorAll('#plans a.cell-link');
+        var matchTd = null;
+        for (var i=0;i<links.length;i++){
+          if (links[i].getAttribute('href') === url){ matchTd = links[i].closest ? links[i].closest('td') : links[i].parentNode; break; }
+        }
+        if (activeCell && activeCell.classList) activeCell.classList.remove('active-cell');
+        if (matchTd && matchTd.classList){ matchTd.classList.add('active-cell'); activeCell = matchTd; }
+      } catch(e) {}
+    }
+
     function openViewer(url, label) {
       var frame = document.getElementById('viewer-frame');
       var title = document.getElementById('viewer-title');
@@ -211,7 +224,7 @@
       if (!frame || !title || !open) return;
       var embed = toEmbedUrl(url);
       frame.src = embed;
-      title.textContent = label || 'Preview';
+      title.textContent = 'Currently viewing: ' + (label || 'Preview');
       open.href = url;
       open.style.display = 'inline';
       try {
@@ -219,6 +232,7 @@
         localStorage.setItem('last_view_label', label || 'Preview');
       } catch (e) {}
       addOrActivateTab(url, label || 'Slides');
+      markActiveCellByUrl(url);
     }
 
     // Tabs management
