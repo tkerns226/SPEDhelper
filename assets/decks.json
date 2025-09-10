@@ -31,10 +31,10 @@
     "Other": {
       "Math": null,
       "Science": null,
-      "STEM": null,
+      "STEM": "Moser, Hemberger, Lapinski",
       "ELA": null,
       "SS": null,
-      "Humanities": { "name": "Messick", "url": "https://docs.google.com/presentation/d/12xnPA-JHOHYdbw1BsNZt0-yN8kXOKXTjUYcj1JGSAec/pub?start=false&loop=true&delayms=3000#slide=id.g33afbd6ded2_0_0" }
+      "Humanities": { "name": "Arnold-Schwartz" }
     }
   }
 }
