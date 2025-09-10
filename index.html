@@ -27,7 +27,16 @@
         
 
         <div class="layout">
-          <div class="table-container" id="plans">
+          <div class="teacher-list-container" id="teacher-list">
+            <div class="view-toggle-buttons">
+              <button class="view-btn active" data-view="subject">By Subject</button>
+              <button class="view-btn" data-view="cohort">By Cohort</button>
+              <button class="view-btn" data-view="list">Simple List</button>
+            </div>
+            <div class="teacher-content" id="teacher-display"></div>
+          </div>
+
+          <div class="table-container" id="plans" style="display:none;">
             <table class="plans-table" id="plans-table">
                 <caption class="visually-hidden">Weekly Plans by Cohort and Subject</caption>
                 <thead id="plans-head">

@@ -329,3 +329,58 @@ footer {
   cursor: pointer;
 }
 .open-team-btn:hover { filter: brightness(0.98); }
+
+/* Teacher list container */
+.teacher-list-container { width: 100%; }
+.view-toggle-buttons { margin-bottom: 12px; }
+.view-btn {
+  display: inline-block; /* enforced */
+  height: 36px;
+  padding: 0 12px;
+  font-size: 14px;
+  font-weight: 500;
+  background: #F5F5F5;
+  color: #222;
+  border: 1px solid #E5E5E5;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 8px; /* spacing */
+}
+.view-btn.active { background: #7B2CBF; color: #fff; border-color: #7B2CBF; }
+
+.teacher-content { transition: opacity 200ms ease; }
+
+.subject-section, .cohort-section { margin-bottom: 32px; }
+.subject-header, .cohort-header {
+  margin: 0 0 24px 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: #7B2CBF;
+  text-transform: uppercase;
+}
+.teacher-list-vertical { display: block; }
+.teacher-btn {
+  width: 100%;
+  height: 44px;
+  text-align: left;
+  padding: 0 16px;
+  background: #ffffff;
+  border: 1px solid #E5E5E5;
+  border-radius: 4px;
+  font-size: 15px;
+  cursor: pointer;
+  margin-bottom: 8px;
+  display: block; /* critical */
+}
+.teacher-btn:hover { background: #F8F9FA; border-color: #7B2CBF; }
+.teacher-btn.active { background: #F3E8FF; border-color: #7B2CBF; font-weight: 600; }
+
+.cohort-tag, .subject-tag, .detail-tag {
+  float: right;
+  background: #F3E8FF;
+  color: #7B2CBF;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 500;
+}

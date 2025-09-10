@@ -205,6 +205,7 @@
     }
 
     var activeCell = null;
+    var activeTeacherBtn = null;
     function markActiveCellByUrl(url){
       try {
         var links = document.querySelectorAll('#plans a.cell-link');
@@ -215,6 +216,15 @@
         if (activeCell && activeCell.classList) activeCell.classList.remove('active-cell');
         if (matchTd && matchTd.classList){ matchTd.classList.add('active-cell'); activeCell = matchTd; }
       } catch(e) {}
+    }
+    function markActiveTeacherByUrl(url){
+      try {
+        var btns = document.querySelectorAll('#teacher-display .teacher-btn');
+        if (activeTeacherBtn && activeTeacherBtn.classList) activeTeacherBtn.classList.remove('active');
+        for (var i=0;i<btns.length;i++){
+          if (btns[i].getAttribute('data-url') === url){ btns[i].classList.add('active'); activeTeacherBtn = btns[i]; break; }
+        }
+      } catch(e){}
     }
 
     function openViewer(url, label) {
@@ -233,6 +243,7 @@
       } catch (e) {}
       addOrActivateTab(url, label || 'Slides');
       markActiveCellByUrl(url);
+      markActiveTeacherByUrl(url);
     }
 
     // Tabs management
@@ -311,6 +322,119 @@
           // activate
           for (var i=0;i<tabs.length;i++){ if (tabs[i].url===url){ openViewer(tabs[i].url, tabs[i].title); break; } }
         });
+      }
+
+      // ------ Teacher List Views ------
+      function normalizeEntries() {
+        var list = [];
+        for (var ci=0; ci<cohorts.length; ci++){
+          var cohort = cohorts[ci];
+          var row = merged.plans && merged.plans[cohort] ? merged.plans[cohort] : {};
+          for (var si=0; si<subjects.length; si++){
+            var subj = subjects[si];
+            var val = row[subj];
+            if (!val) continue;
+            var pushItem = function(name, url){ list.push({ name:name, url:url||'', cohort:cohort, subject:subj }); };
+            if (Array.isArray(val)) {
+              for (var vi=0; vi<val.length; vi++){
+                var it = val[vi];
+                if (typeof it === 'string') { if (it.trim()) pushItem(it.trim(), ''); }
+                else if (it && typeof it === 'object') pushItem(it.name||'', it.url||'');
+              }
+            } else if (typeof val === 'object') {
+              pushItem(val.name||'', val.url||'');
+            } else if (typeof val === 'string') {
+              if (val.indexOf(',') !== -1) {
+                var parts = val.split(',');
+                for (var pj=0; pj<parts.length; pj++){ var nm = parts[pj].trim(); if (nm) pushItem(nm, ''); }
+              } else if (val.trim()) {
+                pushItem(val.trim(), '');
+              }
+            }
+          }
+        }
+        return list.filter(function(x){ return x.name; });
+      }
+
+      function teacherButton(entry, simple){
+        var btn = document.createElement('button'); btn.className='teacher-btn';
+        btn.setAttribute('data-url', entry.url||'');
+        btn.textContent = entry.name + ' ';
+        var span = document.createElement('span');
+        if (simple) { span.className='detail-tag'; span.textContent = entry.cohort + ' ' + entry.subject; }
+        else if (entry.cohort) { span.className='cohort-tag'; span.textContent = entry.cohort; }
+        btn.appendChild(span);
+        if (entry.url){
+          btn.addEventListener('click', function(){ openViewer(entry.url, entry.name); });
+        } else {
+          btn.disabled = true; btn.title = 'No link provided';
+        }
+        return btn;
+      }
+
+      function renderTeacherView(view){
+        var container = document.getElementById('teacher-display');
+        if (!container) return;
+        container.style.opacity = '0';
+        var data = normalizeEntries();
+        var bySubject = {}; var byCohort = {};
+        for (var i=0;i<data.length;i++){
+          var e = data[i];
+          if (!bySubject[e.subject]) bySubject[e.subject] = [];
+          bySubject[e.subject].push(e);
+          if (!byCohort[e.cohort]) byCohort[e.cohort] = [];
+          byCohort[e.cohort].push(e);
+        }
+        var out = document.createElement('div');
+        if (view === 'subject'){
+          for (var s=0;s<subjects.length;s++){
+            var subj = subjects[s]; var arr = bySubject[subj] || [];
+            if (!arr.length) continue;
+            var sec = document.createElement('div'); sec.className='subject-section';
+            var h = document.createElement('h3'); h.className='subject-header'; h.textContent=subj; sec.appendChild(h);
+            var wrap = document.createElement('div'); wrap.className='teacher-list-vertical';
+            arr.forEach(function(t){ wrap.appendChild(teacherButton(t)); });
+            sec.appendChild(wrap); out.appendChild(sec);
+          }
+        } else if (view === 'cohort'){
+          for (var c=0;c<cohorts.length;c++){
+            var coh = cohorts[c]; var arrc = byCohort[coh] || [];
+            if (!arrc.length) continue;
+            var sec2 = document.createElement('div'); sec2.className='cohort-section';
+            var h2 = document.createElement('h3'); h2.className='cohort-header'; h2.textContent=coh + ' Teachers'; sec2.appendChild(h2);
+            var wrap2 = document.createElement('div'); wrap2.className='teacher-list-vertical';
+            subjects.forEach(function(subj){ arrc.filter(function(t){return t.subject===subj;}).forEach(function(t){ wrap2.appendChild(teacherButton(t)); }); });
+            sec2.appendChild(wrap2); out.appendChild(sec2);
+          }
+        } else {
+          var list = data.slice();
+          list.sort(function(a,b){ function last(n){ var p=n.trim().split(/\s+/); return p[p.length-1].toLowerCase(); } var la=last(a.name), lb=last(b.name); return la<lb?-1:la>lb?1:0; });
+          var wrap3 = document.createElement('div'); wrap3.className='simple-list';
+          list.forEach(function(t){ wrap3.appendChild(teacherButton(t, true)); });
+          out.appendChild(wrap3);
+        }
+        container.innerHTML = '';
+        container.appendChild(out);
+        requestAnimationFrame(function(){ container.style.opacity = '1'; });
+      }
+
+      // Attach toggle handlers
+      var toggleWrap = document.querySelector('.view-toggle-buttons');
+      if (toggleWrap){
+        var buttons = toggleWrap.querySelectorAll('.view-btn');
+        buttons.forEach(function(b){
+          b.addEventListener('click', function(){
+            buttons.forEach(function(x){ x.classList.remove('active'); });
+            this.classList.add('active');
+            var view = this.getAttribute('data-view');
+            renderTeacherView(view);
+            try { localStorage.setItem('teacherViewPreference', view); } catch(e){}
+          });
+        });
+        var saved = 'subject';
+        try { saved = localStorage.getItem('teacherViewPreference') || 'subject'; } catch(e){}
+        buttons.forEach(function(x){ if (x.getAttribute('data-view')===saved) x.classList.add('active'); else x.classList.remove('active'); });
+        renderTeacherView(saved);
       }
 
       // Auto-open last viewed or first available link in the viewer
