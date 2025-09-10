@@ -239,6 +239,10 @@ footer {
   font-weight: 600;
 }
 
+/* Stacked names inside a cell */
+.cell-stack { display: grid; gap: 2px; justify-items: center; }
+.cell-stack .cell-name { display: block; }
+
 /* Two-column layout: table + viewer */
 .layout {
   display: grid;

@@ -113,7 +113,19 @@
             var a = document.createElement('a'); a.className='cell-link'; a.href=url; a.textContent = name || 'Open';
             td = createCell(a);
           } else if (name) {
-            var span = document.createElement('span'); span.className='cell-name'; span.textContent=name; td = createCell(span);
+            // Support comma-separated names by stacking vertically
+            if (name.indexOf(',') !== -1) {
+              var wrapper = document.createElement('div');
+              wrapper.className = 'cell-stack';
+              var parts = name.split(',');
+              for (var pi = 0; pi < parts.length; pi++) {
+                var n = parts[pi].trim(); if (!n) continue;
+                var s = document.createElement('span'); s.className = 'cell-name'; s.textContent = n; wrapper.appendChild(s);
+              }
+              td = createCell(wrapper);
+            } else {
+              var span = document.createElement('span'); span.className='cell-name'; span.textContent=name; td = createCell(span);
+            }
           } else {
             td = createCell('-', { className: 'cell-empty', ariaLabel: cohort + ' ' + subject + ' plan not set' });
           }
@@ -122,7 +134,18 @@
             var a2 = document.createElement('a'); a2.className='cell-link'; a2.href=value; a2.textContent='Open';
             td = createCell(a2);
           } else if (value.trim().length) {
-            var span2 = document.createElement('span'); span2.className='cell-name'; span2.textContent=value; td = createCell(span2);
+            var trimmed = value.trim();
+            if (trimmed.indexOf(',') !== -1) {
+              var wrap2 = document.createElement('div'); wrap2.className='cell-stack';
+              var parts2 = trimmed.split(',');
+              for (var pj = 0; pj < parts2.length; pj++) {
+                var n2 = parts2[pj].trim(); if (!n2) continue;
+                var s2 = document.createElement('span'); s2.className='cell-name'; s2.textContent = n2; wrap2.appendChild(s2);
+              }
+              td = createCell(wrap2);
+            } else {
+              var span2 = document.createElement('span'); span2.className='cell-name'; span2.textContent=trimmed; td = createCell(span2);
+            }
           } else {
             td = createCell('-', { className: 'cell-empty', ariaLabel: cohort + ' ' + subject + ' plan not set' });
           }
