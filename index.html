@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Plans in One Place</title>
+    <meta name="description" content="SPEDhelper: a simple dashboard to view weekly slide decks and plans by grade-level teachers.">
+    <meta property="og:title" content="SPEDhelper - Weekly Plans">
+    <meta property="og:description" content="Browse all teacher-made weekly slide decks in one place.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary">
+    <meta name="theme-color" content="#4a90e2">
+    <!-- CSP temporarily removed to support file:// viewing. Re-enable when deploying over HTTP. -->
+    <!-- Optional: add favicon & manifest when available -->
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <header>
+        <h1>Weekly Plans in One Place</h1>
+    </header>
+
+    <main id="main">
+        <div class="intro">
+            <p>A simple dashboard organized by cohort and subject.</p>
+        </div>
+        <div class="toolbar">
+            <button id="export-json" class="btn-secondary" type="button">Export JSON</button>
+            <button id="clear-local" class="btn-secondary" type="button" title="Remove links you added locally">Clear Local Changes</button>
+        </div>
+
+        <div class="layout">
+          <div class="table-container" id="plans">
+            <table class="plans-table" id="plans-table">
+                <caption class="visually-hidden">Weekly Plans by Cohort and Subject</caption>
+                <thead id="plans-head">
+                    <tr>
+                        <th scope="col">Cohort</th>
+                        <th scope="col">Math</th>
+                        <th scope="col">Science</th>
+                        <th scope="col">STEM</th>
+                        <th scope="col">ELA</th>
+                        <th scope="col">SS</th>
+                        <th scope="col">Humanities</th>
+                    </tr>
+                </thead>
+                <tbody id="plans-body">
+                    <tr>
+                        <th scope="row">7A</th>
+                        <td><span class="cell-name">Beck</span></td>
+                        <td><span class="cell-name">Gongaware</span></td>
+                        <td class="cell-empty" aria-label="7A STEM plan not set">-</td>
+                        <td><span class="cell-name">Glah</span></td>
+                        <td><span class="cell-name">Healy</span></td>
+                        <td class="cell-empty" aria-label="7A Humanities plan not set">-</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">7B</th>
+                        <td><span class="cell-name">Mazur</span></td>
+                        <td><span class="cell-name">Epting</span></td>
+                        <td class="cell-empty" aria-label="7B STEM plan not set">-</td>
+                        <td><span class="cell-name">Groen</span></td>
+                        <td><span class="cell-name">Lamey</span></td>
+                        <td class="cell-empty" aria-label="7B Humanities plan not set">-</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">7C</th>
+                        <td><span class="cell-name">Heibeck</span></td>
+                        <td><span class="cell-name">Wire</span></td>
+                        <td class="cell-empty" aria-label="7C STEM plan not set">-</td>
+                        <td><a class="cell-link" href="https://docs.google.com/presentation/d/1nNtgPVRzqZcSpiTK_AwIbR9PsRi74YwAHqWvxb-rzs0/edit?slide=id.g28aa5cf232f_0_5#slide=id.g28aa5cf232f_0_5">Ekert</a></td>
+                        <td><a class="cell-link" href="https://docs.google.com/presentation/d/17405tjCBpmc3O5YfaUlOgw47txVCKci9dX1G8cC4-Zk/edit?usp=sharing">Kerns</a></td>
+                        <td class="cell-empty" aria-label="7C Humanities plan not set">-</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Other</th>
+                        <td class="cell-empty" aria-label="Other Math plan not set">-</td>
+                        <td class="cell-empty" aria-label="Other Science plan not set">-</td>
+                        <td class="cell-empty" aria-label="Other STEM plan not set">-</td>
+                        <td class="cell-empty" aria-label="Other ELA plan not set">-</td>
+                        <td class="cell-empty" aria-label="Other SS plan not set">-</td>
+                        <td><a class="cell-link" href="https://docs.google.com/presentation/d/12xnPA-JHOHYdbw1BsNZt0-yN8kXOKXTjUYcj1JGSAec/pub?start=false&loop=true&delayms=3000#slide=id.g33afbd6ded2_0_0">Messick</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <noscript>
+                <p>JavaScript is required to load plan links dynamically.</p>
+            </noscript>
+          </div>
+
+          <aside class="viewer" aria-label="Slide deck preview">
+            <div class="viewer-header">
+              <span class="viewer-title" id="viewer-title">Select a plan to preview</span>
+              <span class="viewer-actions"><a id="viewer-open" href="#" target="_blank" rel="noopener noreferrer" style="display:none">Open in new tab</a></span>
+            </div>
+            <iframe class="viewer-frame" id="viewer-frame" title="Slide deck" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </aside>
+        </div>
+    </main>
+
+    
+
+    <template id="decks-data">
+{
+  "order": {
+    "cohorts": ["7A", "7B", "7C", "Other"],
+    "subjects": ["Math", "Science", "STEM", "ELA", "SS", "Humanities"]
+  },
+  "plans": {
+    "7A": {
+      "Math": { "name": "Beck" },
+      "Science": { "name": "Gongaware" },
+      "STEM": null,
+      "ELA": { "name": "Glah" },
+      "SS": { "name": "Healy" },
+      "Humanities": null
+    },
+    "7B": {
+      "Math": { "name": "Mazur" },
+      "Science": { "name": "Epting" },
+      "STEM": null,
+      "ELA": { "name": "Groen" },
+      "SS": { "name": "Lamey" },
+      "Humanities": null
+    },
+    "7C": {
+      "Math": { "name": "Heibeck" },
+      "Science": { "name": "Wire" },
+      "STEM": null,
+      "ELA": { "name": "Ekert", "url": "https://docs.google.com/presentation/d/1nNtgPVRzqZcSpiTK_AwIbR9PsRi74YwAHqWvxb-rzs0/edit?slide=id.g28aa5cf232f_0_5#slide=id.g28aa5cf232f_0_5" },
+      "SS": { "name": "Kerns", "url": "https://docs.google.com/presentation/d/17405tjCBpmc3O5YfaUlOgw47txVCKci9dX1G8cC4-Zk/edit?usp=sharing" },
+      "Humanities": null
+    },
+    "Other": {
+      "Math": null,
+      "Science": null,
+      "STEM": null,
+      "ELA": null,
+      "SS": null,
+      "Humanities": { "name": "Messick", "url": "https://docs.google.com/presentation/d/12xnPA-JHOHYdbw1BsNZt0-yN8kXOKXTjUYcj1JGSAec/pub?start=false&loop=true&delayms=3000#slide=id.g33afbd6ded2_0_0" }
+    }
+  }
+}
+    </template>
+    <script src="assets/app.js" defer></script>
+</body>
+</html>
