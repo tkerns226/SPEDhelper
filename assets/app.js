@@ -82,54 +82,7 @@
     return tr;
   }
 
-  function deepClone(o){ return JSON.parse(JSON.stringify(o)); }
-
-  function deepMerge(base, override) {
-    var out = Array.isArray(base) ? [] : {};
-    var obj = {};
-    var k;
-    base = base || {};
-    override = override || {};
-    for (k in base) { if (Object.prototype.hasOwnProperty.call(base, k)) obj[k] = true; }
-    for (k in override) { if (Object.prototype.hasOwnProperty.call(override, k)) obj[k] = true; }
-    for (k in obj) {
-      var bv = base[k];
-      var ov = override[k];
-      if (typeof ov === 'undefined') out[k] = deepClone(bv);
-      else if (bv && typeof bv === 'object' && ov && typeof ov === 'object' && !Array.isArray(bv) && !Array.isArray(ov)) {
-        out[k] = deepMerge(bv, ov);
-      } else {
-        out[k] = deepClone(ov);
-      }
-    }
-    return out;
-  }
-
-  function addLinkButton(td, cohort, subject, state) {
-    var actions = document.createElement('div');
-    actions.className = 'cell-actions';
-    var btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'cell-add-link';
-    btn.textContent = 'Add link';
-    btn.addEventListener('click', function () {
-      var url = prompt('Enter URL for ' + cohort + ' - ' + subject);
-      if (!url) return;
-      if (!/^https?:\/\//i.test(url)) { alert('Please enter a valid http(s) URL.'); return; }
-      var curPlanCohort = (state.overrides.plans && state.overrides.plans[cohort]) ? state.overrides.plans[cohort] : null;
-      var current = (curPlanCohort && curPlanCohort[subject]) ? curPlanCohort[subject]
-                   : (state.merged.plans && state.merged.plans[cohort] ? state.merged.plans[cohort][subject] : {});
-      var name = (current && typeof current === 'object' && current.name) ? current.name : (typeof current === 'string' ? '' : '');
-      if (!state.overrides.plans) state.overrides.plans = {};
-      if (!state.overrides.plans[cohort]) state.overrides.plans[cohort] = {};
-      state.overrides.plans[cohort][subject] = name ? { name: name, url: url } : url;
-      localStorage.setItem('plans_overrides', JSON.stringify(state.overrides));
-      state.merged = deepMerge(state.base, state.overrides);
-      render(state);
-    });
-    actions.appendChild(btn);
-    td.appendChild(actions);
-  }
+  // (Removed local edit helpers: deepMerge/addLinkButton) — links are managed via decks.json only.
 
   function render(state) {
     var thead = document.getElementById('plans-head');
@@ -217,10 +170,8 @@
     function proceed(base) {
       var subjects = (base.order && base.order.subjects && base.order.subjects.length) ? base.order.subjects : DEFAULT_SUBJECTS;
       var cohorts = (base.order && base.order.cohorts && base.order.cohorts.length) ? base.order.cohorts : DEFAULT_COHORTS;
-      var overrides = {};
-      try { overrides = JSON.parse(localStorage.getItem('plans_overrides') || '{}') || {}; } catch (e) {}
-      var merged = deepMerge(base, overrides);
-      var state = { base: base, overrides: overrides, merged: merged, subjects: subjects, cohorts: cohorts };
+      var merged = base; // no local overrides
+      var state = { base: base, merged: merged, subjects: subjects, cohorts: cohorts };
       render(state);
 
       // Intercept table link clicks to open in the side viewer
@@ -249,11 +200,9 @@
       }
 
       var exportBtn = document.getElementById('export-json');
-      var clearBtn = document.getElementById('clear-local');
       if (exportBtn) {
         exportBtn.addEventListener('click', function () {
-          var mergedOut = deepMerge(state.base, state.overrides);
-          var text = JSON.stringify(mergedOut, null, 2);
+          var text = JSON.stringify(state.base, null, 2);
           try {
             if (navigator.clipboard && navigator.clipboard.writeText) {
               navigator.clipboard.writeText(text).then(function(){ alert('Copied updated JSON to clipboard. Paste into assets/decks.json to persist.'); })
@@ -264,15 +213,6 @@
           } catch (e) {
             downloadText(text);
           }
-        });
-      }
-      if (clearBtn) {
-        clearBtn.addEventListener('click', function () {
-          if (!confirm('Clear local changes? This does not modify decks.json until you export and replace it.')) return;
-          localStorage.removeItem('plans_overrides');
-          state.overrides = {};
-          state.merged = deepMerge(state.base, state.overrides);
-          render(state);
         });
       }
     }
