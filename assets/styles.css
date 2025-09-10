@@ -95,7 +95,6 @@ body {
   border-radius: 12px;
   font-weight: 600;
   box-shadow: var(--shadow-lg);
-  transition: all 0.3s ease;
   backdrop-filter: blur(10px);
 }
 
@@ -147,13 +146,8 @@ main {
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.15);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
 }
 
-.intro:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.25);
-}
 
 .intro p {
   font-size: 1.1rem;
@@ -224,7 +218,6 @@ main {
   border: 1px solid rgba(245, 158, 11, 0.3);
   cursor: pointer;
   font-size: 0.95rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: var(--shadow-sm);
   position: relative;
   overflow: hidden;
@@ -289,7 +282,6 @@ main {
   text-decoration: none;
   font-weight: 600;
   font-size: 0.9rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(10px);
   box-shadow: var(--shadow-sm);
   position: relative;
@@ -418,7 +410,6 @@ footer {
   vertical-align: middle;
   min-height: 56px;
   position: relative;
-  transition: all 0.3s ease;
 }
 
 .plans-table th::after,
@@ -467,7 +458,6 @@ footer {
 
 .plans-table tbody tr {
   background: rgba(255, 255, 255, 0.8);
-  transition: all 0.3s ease;
 }
 
 .plans-table tbody tr:nth-child(even) {
@@ -499,7 +489,6 @@ footer {
   color: #1F2937;
   font-weight: 700;
   font-size: 0.9rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid rgba(245, 158, 11, 0.3);
   box-shadow: var(--shadow-sm);
 }
@@ -587,7 +576,7 @@ footer {
 
 .viewer {
   background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(25px) saturate(180%);
+  backdrop-filter: blur(10px);
   border: 2px solid rgba(255, 255, 255, 0.1);
   border-radius: 24px;
   box-shadow: 
@@ -597,8 +586,6 @@ footer {
   overflow: hidden;
   justify-self: stretch;
   position: relative;
-  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-  transform-style: preserve-3d;
 }
 
 
@@ -649,7 +636,6 @@ footer {
   border-radius: 8px;
   background: rgba(124, 58, 237, 0.1);
   border: 1px solid rgba(124, 58, 237, 0.2);
-  transition: all 0.3s ease;
   backdrop-filter: blur(10px);
 }
 
@@ -684,7 +670,6 @@ footer {
   white-space: nowrap;
   font-weight: 600;
   font-size: 0.9rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(10px);
   position: relative;
   overflow: hidden;
@@ -736,7 +721,6 @@ footer {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
 }
 
 .tab .tab-close:hover {
@@ -823,7 +807,6 @@ footer {
   color: var(--color-secondary);
   border-radius: 16px;
   cursor: pointer;
-  transition: all 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   backdrop-filter: blur(10px);
@@ -840,7 +823,7 @@ footer {
 .teacher-list-container {
   width: 100%;
   background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(30px) saturate(180%);
+  backdrop-filter: blur(15px);
   border-radius: 20px;
   padding: 32px;
   border: 2px solid rgba(255, 255, 255, 0.08);
@@ -850,8 +833,6 @@ footer {
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
   position: relative;
   overflow: hidden;
-  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-  transform-style: preserve-3d;
 }
 
 
@@ -878,12 +859,10 @@ footer {
   border: none;
   border-radius: 12px;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
   position: relative;
   overflow: hidden;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  transform-style: preserve-3d;
 }
 
 
@@ -908,11 +887,6 @@ footer {
 .view-btn.active {
   background: linear-gradient(135deg, rgba(124, 58, 237, 0.8), rgba(168, 85, 247, 0.8));
   color: white;
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 
-    0 20px 40px -8px rgba(124, 58, 237, 0.6),
-    0 0 0 1px rgba(255, 255, 255, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -928,22 +902,16 @@ footer {
   border-radius: 16px;
   padding: 24px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(10px);
   box-shadow: 
     0 20px 40px -12px rgba(0, 0, 0, 0.3),
     0 0 0 1px rgba(255, 255, 255, 0.05),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
   position: relative;
   overflow: hidden;
-  transform-style: preserve-3d;
 }
 
 
-.subject-section:hover, .cohort-section:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-}
 
 .subject-header, .cohort-header {
   margin: 0 0 16px 0;
@@ -977,12 +945,10 @@ footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-  backdrop-filter: blur(15px) saturate(120%);
+  backdrop-filter: blur(8px);
   position: relative;
   overflow: hidden;
   color: rgba(255, 255, 255, 0.9);
-  transform-style: preserve-3d;
 }
 
 
@@ -1036,7 +1002,6 @@ footer {
   text-transform: uppercase;
   letter-spacing: 0.5px;
   backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
 }
 
 .teacher-btn.active .cohort-tag,
@@ -1100,7 +1065,6 @@ footer {
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(135deg, rgba(124, 58, 237, 0.6), rgba(245, 158, 11, 0.6));
   border-radius: 10px;
-  transition: all 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
