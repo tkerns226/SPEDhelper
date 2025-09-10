@@ -32,7 +32,15 @@
     var tr = document.createElement('tr');
     var th = document.createElement('th');
     th.scope = 'row';
-    th.textContent = cohort;
+    // Row header with Open Team button
+    var thWrap = document.createElement('div');
+    thWrap.style.display = 'flex';
+    thWrap.style.alignItems = 'center';
+    thWrap.style.gap = '6px';
+    var thLabel = document.createElement('span'); thLabel.textContent = cohort; thWrap.appendChild(thLabel);
+    var teamBtn = document.createElement('button'); teamBtn.type='button'; teamBtn.className='open-team-btn'; teamBtn.textContent='Open Team'; teamBtn.setAttribute('data-cohort', cohort);
+    thWrap.appendChild(teamBtn);
+    th.appendChild(thWrap);
     tr.appendChild(th);
 
     for (var i = 0; i < subjects.length; i++) {
@@ -210,6 +218,33 @@
         localStorage.setItem('last_view_url', url);
         localStorage.setItem('last_view_label', label || 'Preview');
       } catch (e) {}
+      addOrActivateTab(url, label || 'Slides');
+    }
+
+    // Tabs management
+    var tabs = [];
+    function renderTabs(activeUrl) {
+      var bar = document.getElementById('viewer-tabs');
+      if (!bar) return;
+      bar.innerHTML = '';
+      for (var i=0;i<tabs.length;i++) {
+        var t = tabs[i];
+        var el = document.createElement('div'); el.className = 'tab' + (t.url===activeUrl?' active':''); el.setAttribute('data-url', t.url);
+        var span = document.createElement('span'); span.className='tab-title'; span.textContent = t.title; el.appendChild(span);
+        var close = document.createElement('button'); close.className='tab-close'; close.type='button'; close.textContent='×'; el.appendChild(close);
+        bar.appendChild(el);
+      }
+    }
+    function addOrActivateTab(url, title){
+      // check existing
+      for (var i=0;i<tabs.length;i++){ if (tabs[i].url===url){ renderTabs(url); return; } }
+      tabs.push({ url:url, title:title });
+      renderTabs(url);
+    }
+    function closeTab(url){
+      tabs = tabs.filter(function(t){ return t.url!==url; });
+      renderTabs((tabs[0]||{}).url || '');
+      if (tabs.length){ openViewer(tabs[tabs.length-1].url, tabs[tabs.length-1].title); }
     }
 
     function proceed(base) {
@@ -227,7 +262,40 @@
           if (el && el.tagName === 'A' && /\bcell-link\b/.test(el.className)) {
             e.preventDefault();
             openViewer(el.getAttribute('href'), el.textContent || 'Slides');
+            return;
           }
+          if (el && /\bopen-team-btn\b/.test(el.className)) {
+            var cohort = el.getAttribute('data-cohort');
+            var rowPlans = merged.plans && merged.plans[cohort] ? merged.plans[cohort] : {};
+            var added = 0;
+            for (var si=0; si<subjects.length; si++){
+              var subj = subjects[si];
+              var val = rowPlans[subj];
+              if (!val) continue;
+              if (Array.isArray(val)) {
+                for (var vi=0; vi<val.length; vi++){
+                  var item = val[vi];
+                  if (item && typeof item === 'object' && item.url){ addOrActivateTab(item.url, (item.name||subj)); added++; }
+                  else if (typeof item === 'string' && /^https?:\/\//i.test(item)) { addOrActivateTab(item, subj); added++; }
+                }
+              } else if (typeof val === 'object' && val.url) { addOrActivateTab(val.url, (val.name||subj)); added++; }
+              else if (typeof val === 'string' && /^https?:\/\//i.test(val)) { addOrActivateTab(val, subj); added++; }
+            }
+            if (added>0){ var last = tabs[tabs.length-1]; openViewer(last.url, last.title); }
+          }
+        });
+      }
+
+      var tabsBar = document.getElementById('viewer-tabs');
+      if (tabsBar){
+        tabsBar.addEventListener('click', function(e){
+          var el = e.target || e.srcElement;
+          var tabEl = el.closest ? el.closest('.tab') : null;
+          if (!tabEl) return;
+          var url = tabEl.getAttribute('data-url');
+          if (el.className && /\btab-close\b/.test(el.className)) { closeTab(url); return; }
+          // activate
+          for (var i=0;i<tabs.length;i++){ if (tabs[i].url===url){ openViewer(tabs[i].url, tabs[i].title); break; } }
         });
       }
 
