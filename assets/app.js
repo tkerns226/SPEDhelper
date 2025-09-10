@@ -451,6 +451,15 @@
       }
 
       // Export button removed: edits happen via decks.json commits only.
+
+      // Fallback: ensure teacher list renders at least once
+      var disp = document.getElementById('teacher-display');
+      if (disp && !disp.firstChild) {
+        try {
+          var defaultView = localStorage.getItem('teacherViewPreference') || 'subject';
+          renderTeacherView(defaultView);
+        } catch(e) { renderTeacherView('subject'); }
+      }
     }
 
     function downloadText(text) {
