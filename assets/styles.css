@@ -1094,3 +1094,37 @@ footer {
   display: grid;
   gap: 12px;
 }
+
+/* Open All Team buttons */
+.open-all-team-btn,
+.open-all-teachers-btn {
+  background: linear-gradient(135deg, var(--color-secondary), #FCD34D) !important;
+  color: #1F2937 !important;
+  font-weight: 700 !important;
+  border: 2px solid rgba(245, 158, 11, 0.5) !important;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.open-all-team-btn::before,
+.open-all-teachers-btn::before {
+  background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.3), transparent) !important;
+}
+
+.open-all-team-btn:hover,
+.open-all-teachers-btn:hover {
+  background: linear-gradient(135deg, #F59E0B, #FBBF24) !important;
+  transform: translateX(6px) translateY(-3px) !important;
+  box-shadow: var(--shadow-xl) !important;
+}
+
+.open-all-team-btn .cohort-tag,
+.open-all-team-btn .detail-tag,
+.open-all-teachers-btn .cohort-tag,
+.open-all-teachers-btn .detail-tag {
+  background: rgba(245, 158, 11, 0.2) !important;
+  color: #1F2937 !important;
+  border-color: rgba(245, 158, 11, 0.4) !important;
+  font-weight: 800 !important;
+}

@@ -350,15 +350,15 @@
             var subj = subjects[si];
             var val = row[subj];
             if (!val) continue;
-            var pushItem = function(name, url){ list.push({ name:name, url:url||'', cohort:cohort, subject:subj }); };
+            var pushItem = function(name, url, actualSubj){ list.push({ name:name, url:url||'', cohort:cohort, subject:actualSubj||subj }); };
             if (Array.isArray(val)) {
               for (var vi=0; vi<val.length; vi++){
                 var it = val[vi];
                 if (typeof it === 'string') { if (it.trim()) pushItem(it.trim(), ''); }
-                else if (it && typeof it === 'object') pushItem(it.name||'', it.url||'');
+                else if (it && typeof it === 'object') pushItem(it.name||'', it.url||'', it.subject||'');
               }
             } else if (typeof val === 'object') {
-              pushItem(val.name||'', val.url||'');
+              pushItem(val.name||'', val.url||'', val.subject||'');
             } else if (typeof val === 'string') {
               if (val.indexOf(',') !== -1) {
                 var parts = val.split(',');
@@ -377,8 +377,8 @@
         btn.setAttribute('data-url', entry.url||'');
         btn.textContent = entry.name + ' ';
         var span = document.createElement('span');
-        if (simple) { span.className='detail-tag'; span.textContent = entry.cohort + ' ' + entry.subject; }
-        else if (entry.cohort) { span.className='cohort-tag'; span.textContent = entry.cohort; }
+        if (simple) { span.className='detail-tag'; span.textContent = entry.cohort + ' ' + (entry.subject || 'General'); }
+        else if (entry.cohort) { span.className='cohort-tag'; span.textContent = entry.subject || entry.cohort; }
         btn.appendChild(span);
         if (entry.url){
           btn.addEventListener('click', function(){ openViewer(entry.url, entry.name); });
@@ -419,13 +419,56 @@
             var sec2 = document.createElement('div'); sec2.className='cohort-section';
             var h2 = document.createElement('h3'); h2.className='cohort-header'; h2.textContent=coh + ' Teachers'; sec2.appendChild(h2);
             var wrap2 = document.createElement('div'); wrap2.className='teacher-list-vertical';
-            subjects.forEach(function(subj){ arrc.filter(function(t){return t.subject===subj;}).forEach(function(t){ wrap2.appendChild(teacherButton(t)); }); });
+            // Add Open All Team button for this cohort
+            var openAllBtn = document.createElement('button');
+            openAllBtn.className = 'teacher-btn open-all-team-btn';
+            openAllBtn.textContent = 'Open All ' + coh + ' Team ';
+            openAllBtn.setAttribute('data-cohort', coh);
+            var openAllSpan = document.createElement('span');
+            openAllSpan.className = 'cohort-tag';
+            openAllSpan.textContent = 'ALL';
+            openAllBtn.appendChild(openAllSpan);
+            openAllBtn.addEventListener('click', function(){
+              // Open all teachers with links for this cohort
+              var cohortTeachers = arrc.filter(function(t){ return t.url; });
+              for(var i=0; i<cohortTeachers.length; i++){
+                addOrActivateTab(cohortTeachers[i].url, cohortTeachers[i].name);
+              }
+              if(cohortTeachers.length > 0){
+                var last = tabs[tabs.length-1];
+                openViewer(last.url, last.title);
+              }
+            });
+            wrap2.appendChild(openAllBtn);
+            
+            subjects.forEach(function(subj){ arrc.filter(function(t){return t.subject===subj || (t.subject === '' && t.cohort && t.cohort.indexOf(subj) > -1);}).forEach(function(t){ wrap2.appendChild(teacherButton(t)); }); });
             sec2.appendChild(wrap2); out.appendChild(sec2);
           }
         } else {
           var list = data.slice();
           list.sort(function(a,b){ function last(n){ var p=n.trim().split(/\s+/); return p[p.length-1].toLowerCase(); } var la=last(a.name), lb=last(b.name); return la<lb?-1:la>lb?1:0; });
           var wrap3 = document.createElement('div'); wrap3.className='simple-list';
+          
+          // Add Open All Teachers button at top
+          var openAllBtn = document.createElement('button');
+          openAllBtn.className = 'teacher-btn open-all-teachers-btn';
+          openAllBtn.textContent = 'Open All Available Slides ';
+          var openAllSpan = document.createElement('span');
+          openAllSpan.className = 'detail-tag';
+          openAllSpan.textContent = 'ALL SLIDES';
+          openAllBtn.appendChild(openAllSpan);
+          openAllBtn.addEventListener('click', function(){
+            var teachersWithLinks = list.filter(function(t){ return t.url; });
+            for(var i=0; i<teachersWithLinks.length; i++){
+              addOrActivateTab(teachersWithLinks[i].url, teachersWithLinks[i].name);
+            }
+            if(teachersWithLinks.length > 0){
+              var last = tabs[tabs.length-1];
+              openViewer(last.url, last.title);
+            }
+          });
+          wrap3.appendChild(openAllBtn);
+          
           list.forEach(function(t){ wrap3.appendChild(teacherButton(t, true)); });
           out.appendChild(wrap3);
         }
