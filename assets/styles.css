@@ -214,61 +214,26 @@ body {
 
 /* Header */
 header {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 50%, var(--color-secondary) 100%);
+  background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
   color: #ffffff;
-  padding: 32px 0;
+  padding: 24px 0;
   text-align: center;
   position: relative;
-  overflow: hidden;
-}
-
-header::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
-  animation: shimmer 3s ease-in-out infinite;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 header h1 {
   margin: 0;
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
-  font-weight: 800;
-  background: linear-gradient(135deg, #FFD700 0%, #FFA500 25%, #FF69B4 50%, #8A2BE2 75%, #00CED1 100%);
-  background-size: 400% 400%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  color: #ffffff;
   position: relative;
   z-index: 1;
-  animation: gradientShift 8s ease-in-out infinite, textGlow 3s ease-in-out infinite;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 
-@keyframes gradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-@keyframes textGlow {
-  0%, 100% { 
-    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3)) drop-shadow(0 0 20px rgba(255, 215, 0, 0.2));
-  }
-  50% { 
-    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.6)) drop-shadow(0 0 40px rgba(255, 215, 0, 0.4));
-  }
-}
-
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
 
 /* Main container */
 main {
@@ -283,55 +248,24 @@ main {
 
 .intro {
   text-align: center;
-  margin-bottom: 48px;
-  padding: 40px;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(25px) saturate(180%);
-  border-radius: 24px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.25),
-    0 0 0 1px rgba(255, 255, 255, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  position: relative;
-  overflow: hidden;
-  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-  transform-style: preserve-3d;
-}
-
-.intro::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.1) 0%, 
-    rgba(255, 255, 255, 0.05) 25%,
-    transparent 50%,
-    rgba(124, 58, 237, 0.05) 75%,
-    rgba(245, 158, 11, 0.1) 100%);
-  border-radius: 24px;
-  animation: shimmerGlass 4s ease-in-out infinite;
-}
-
-@keyframes shimmerGlass {
-  0%, 100% { opacity: 0.3; transform: translateX(-100%); }
-  50% { opacity: 1; transform: translateX(100%); }
+  margin-bottom: 32px;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
 }
 
 .intro:hover {
-  transform: translateY(-8px) rotateX(5deg) rotateY(-5deg);
-  box-shadow: 
-    0 35px 70px -12px rgba(0, 0, 0, 0.35),
-    0 0 0 1px rgba(255, 255, 255, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.25);
 }
 
 .intro p {
-  font-size: 1.2rem;
-  color: var(--color-text-secondary);
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
   margin: 0;
   font-weight: 500;
 }
