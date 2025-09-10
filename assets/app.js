@@ -441,7 +441,7 @@
             });
             wrap2.appendChild(openAllBtn);
             
-            subjects.forEach(function(subj){ arrc.filter(function(t){return t.subject===subj || (t.subject === '' && t.cohort && t.cohort.indexOf(subj) > -1);}).forEach(function(t){ wrap2.appendChild(teacherButton(t)); }); });
+            subjects.forEach(function(subj){ arrc.filter(function(t){return t.subject===subj;}).forEach(function(t){ wrap2.appendChild(teacherButton(t)); }); });
             sec2.appendChild(wrap2); out.appendChild(sec2);
           }
         } else {
