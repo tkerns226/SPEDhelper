@@ -317,6 +317,22 @@ footer {
   border: 0;
 }
 
+/* Viewer loading/fallback */
+.viewer-wrap { position: relative; }
+.viewer-loading {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.6);
+  z-index: 1;
+}
+.viewer-loading.active { display: flex; }
+.spinner { width: 28px; height: 28px; border: 3px solid #ddd; border-top-color: #7B2CBF; border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.viewer-error { font-size: 14px; color: #7B2CBF; }
+
 /* Open Team button in row header */
 .open-team-btn {
   margin-left: 8px;

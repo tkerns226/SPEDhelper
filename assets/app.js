@@ -231,8 +231,10 @@
       var frame = document.getElementById('viewer-frame');
       var title = document.getElementById('viewer-title');
       var open = document.getElementById('viewer-open');
+      var loading = document.getElementById('viewer-loading');
       if (!frame || !title || !open) return;
       var embed = toEmbedUrl(url);
+      try { if (loading) loading.classList.add('active'); } catch(e){}
       frame.src = embed;
       title.textContent = 'Currently viewing: ' + (label || 'Preview');
       open.href = url;
@@ -244,6 +246,20 @@
       addOrActivateTab(url, label || 'Slides');
       markActiveCellByUrl(url);
       markActiveTeacherByUrl(url);
+      // load/timeout handling
+      var handled = false;
+      var clear = function(){ if (handled) return; handled = true; try { if (loading) loading.classList.remove('active'); } catch(e){} };
+      frame.onload = clear;
+      setTimeout(function(){
+        if (!handled){
+          clear();
+          // Show a small message if needed
+          try {
+            var l = document.getElementById('viewer-loading');
+            if (l){ l.innerHTML = '<div class="viewer-error">If the preview is blank, click \'Open in new tab\'.</div>'; l.classList.add('active'); setTimeout(function(){ l.classList.remove('active'); l.innerHTML = '<div class="spinner"></div>'; }, 3500); }
+          } catch(e){}
+        }
+      }, 8000);
     }
 
     // Tabs management
