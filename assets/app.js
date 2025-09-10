@@ -199,22 +199,7 @@
         if (first) openViewer(first.getAttribute('href'), first.textContent || 'Slides');
       }
 
-      var exportBtn = document.getElementById('export-json');
-      if (exportBtn) {
-        exportBtn.addEventListener('click', function () {
-          var text = JSON.stringify(state.base, null, 2);
-          try {
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-              navigator.clipboard.writeText(text).then(function(){ alert('Copied updated JSON to clipboard. Paste into assets/decks.json to persist.'); })
-              .catch(function(){ downloadText(text); });
-            } else {
-              downloadText(text);
-            }
-          } catch (e) {
-            downloadText(text);
-          }
-        });
-      }
+      // Export button removed: edits happen via decks.json commits only.
     }
 
     function downloadText(text) {
