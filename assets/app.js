@@ -113,21 +113,21 @@
             var a = document.createElement('a'); a.className='cell-link'; a.href=url; a.textContent = name || 'Open';
             td = createCell(a);
           } else if (name) {
-            var span = document.createElement('span'); span.className='cell-name'; span.textContent=name; td = createCell(span); addLinkButton(td, cohort, subject, state);
+            var span = document.createElement('span'); span.className='cell-name'; span.textContent=name; td = createCell(span);
           } else {
-            td = createCell('-', { className: 'cell-empty', ariaLabel: cohort + ' ' + subject + ' plan not set' }); addLinkButton(td, cohort, subject, state);
+            td = createCell('-', { className: 'cell-empty', ariaLabel: cohort + ' ' + subject + ' plan not set' });
           }
         } else if (typeof value === 'string') {
           if (/^https?:\/\//i.test(value)) {
             var a2 = document.createElement('a'); a2.className='cell-link'; a2.href=value; a2.textContent='Open';
             td = createCell(a2);
           } else if (value.trim().length) {
-            var span2 = document.createElement('span'); span2.className='cell-name'; span2.textContent=value; td = createCell(span2); addLinkButton(td, cohort, subject, state);
+            var span2 = document.createElement('span'); span2.className='cell-name'; span2.textContent=value; td = createCell(span2);
           } else {
-            td = createCell('-', { className: 'cell-empty', ariaLabel: cohort + ' ' + subject + ' plan not set' }); addLinkButton(td, cohort, subject, state);
+            td = createCell('-', { className: 'cell-empty', ariaLabel: cohort + ' ' + subject + ' plan not set' });
           }
         } else {
-          td = createCell('-', { className: 'cell-empty', ariaLabel: cohort + ' ' + subject + ' plan not set' }); addLinkButton(td, cohort, subject, state);
+          td = createCell('-', { className: 'cell-empty', ariaLabel: cohort + ' ' + subject + ' plan not set' });
         }
         tr.appendChild(td);
       }
