@@ -495,24 +495,9 @@ footer {
 
 /* Active cell highlight when selected in viewer */
 .active-cell {
-  outline: 2px solid var(--color-primary);
-  outline-offset: -2px;
-  background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(168, 85, 247, 0.1));
-  animation: pulse 2s ease-in-out infinite;
-  position: relative;
-}
-
-.active-cell::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
-  border-radius: 8px;
-  z-index: -1;
-  opacity: 0.1;
+  background: #F3F0FF;
+  border: 2px solid var(--primary);
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.1);
 }
 
 /* Two-column layout: table + viewer */
