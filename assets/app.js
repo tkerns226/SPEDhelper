@@ -106,6 +106,28 @@
         var row = merged.plans && merged.plans[cohort] ? merged.plans[cohort] : {};
         var value = row[subject];
         var td;
+        // Support arrays of entries (stacked items)
+        if (Array.isArray(value)) {
+          var wrap = document.createElement('div'); wrap.className = 'cell-stack';
+          for (var ai = 0; ai < value.length; ai++) {
+            var item = value[ai];
+            if (typeof item === 'string') {
+              var str = item.trim(); if (!str) continue;
+              var sp = document.createElement('span'); sp.className='cell-name'; sp.textContent = str; wrap.appendChild(sp);
+            } else if (item && typeof item === 'object') {
+              var iname = item.name || '';
+              var iurl = item.url || '';
+              if (iurl) {
+                var la = document.createElement('a'); la.className='cell-link'; la.href=iurl; la.textContent = iname || 'Open'; wrap.appendChild(la);
+              } else if (iname) {
+                var isp = document.createElement('span'); isp.className='cell-name'; isp.textContent = iname; wrap.appendChild(isp);
+              }
+            }
+          }
+          td = createCell(wrap);
+          tr.appendChild(td);
+          continue;
+        }
         if (value && typeof value === 'object') {
           var name = value.name || '';
           var url = value.url || '';
