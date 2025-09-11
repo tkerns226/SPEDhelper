@@ -206,6 +206,8 @@
 
     var activeCell = null;
     var activeTeacherBtn = null;
+    var editMode = false;
+    var currentTeacherView = 'subject';
     function markActiveCellByUrl(url){
       try {
         var links = document.querySelectorAll('#plans a.cell-link');
@@ -363,24 +365,24 @@
             var val = row[subj];
             if (!val) continue;
             // Store grouping subject as the category, and keep any finer-grained label (e.g., course name)
-            var pushItem = function(name, url, label){ list.push({ name: name, url: url || '', cohort: cohort, subject: subj, label: label || '' }); };
+            var pushItem = function(name, url, label, index){ list.push({ name: name, url: url || '', cohort: cohort, subject: subj, label: label || '', _index: (typeof index==='number'? index : null) }); };
             if (Array.isArray(val)) {
               for (var vi=0; vi<val.length; vi++){
                 var it = val[vi];
                 if (typeof it === 'string') {
-                  var trimmed = it.trim(); if (trimmed) pushItem(trimmed, '', '');
+                  var trimmed = it.trim(); if (trimmed) pushItem(trimmed, '', '', vi);
                 } else if (it && typeof it === 'object') {
-                  pushItem(it.name || '', it.url || '', it.subject || '');
+                  pushItem(it.name || '', it.url || '', it.subject || '', vi);
                 }
               }
             } else if (typeof val === 'object') {
-              pushItem(val.name || '', val.url || '', val.subject || '');
+              pushItem(val.name || '', val.url || '', val.subject || '', null);
             } else if (typeof val === 'string') {
               if (val.indexOf(',') !== -1) {
                 var parts = val.split(',');
-                for (var pj=0; pj<parts.length; pj++){ var nm = parts[pj].trim(); if (nm) pushItem(nm, '', ''); }
+                for (var pj=0; pj<parts.length; pj++){ var nm = parts[pj].trim(); if (nm) pushItem(nm, '', '', pj); }
               } else if (val.trim()) {
-                pushItem(val.trim(), '', '');
+                pushItem(val.trim(), '', '', null);
               }
             }
           }
@@ -411,6 +413,12 @@
         } else {
           btn.disabled = true; btn.title = 'No link provided';
         }
+        if (editMode) {
+          var edit = document.createElement('button');
+          edit.type='button'; edit.className='mini-edit-btn'; edit.textContent='Edit';
+          edit.addEventListener('click', function(ev){ ev.stopPropagation(); editEntry(entry); });
+          btn.appendChild(edit);
+        }
         return btn;
       }
 
@@ -418,6 +426,7 @@
         var container = document.getElementById('teacher-display');
         if (!container) return;
         container.style.opacity = '0';
+        currentTeacherView = view;
         var data = normalizeEntries();
         var bySubject = {}; var byCohort = {};
         for (var i=0;i<data.length;i++){
@@ -546,6 +555,43 @@
           renderTeacherView(defaultView);
         } catch(e) { renderTeacherView('subject'); }
       }
+    }
+
+    function editEntry(entry){
+      try {
+        var cohort = entry.cohort; var subj = entry.subject;
+        var row = state.base.plans && state.base.plans[cohort] ? state.base.plans[cohort] : null;
+        if (!row) return;
+        var cell = row[subj];
+        var curName = entry.name || '';
+        var curLabel = entry.label || '';
+        var curUrl = entry.url || '';
+        var name = window.prompt('Teacher name', curName); if (name===null) return;
+        var label = window.prompt('Course/label (optional)', curLabel); if (label===null) return;
+        var url = window.prompt('Slide URL (Google Slides preferred)', curUrl); if (url===null) return;
+        var newObj = { name: name, url: url };
+        if (label) newObj.subject = label;
+        if (Array.isArray(cell)){
+          var idx = (typeof entry._index==='number') ? entry._index : 0;
+          cell[idx] = newObj;
+        } else {
+          row[subj] = newObj;
+        }
+        // re-render table and teacher list
+        render(state);
+        renderTeacherView(currentTeacherView);
+      } catch(e){}
+    }
+
+    function injectEditorControls(){
+      var host = document.querySelector('.view-toggle-buttons');
+      if (!host) return;
+      var wrap = document.createElement('div'); wrap.className='editor-controls'; wrap.style.display='inline-flex'; wrap.style.gap='8px'; wrap.style.marginLeft='8px';
+      var toggle = document.createElement('button'); toggle.type='button'; toggle.className='view-btn'; toggle.textContent = editMode ? 'Editing: ON' : 'Editing: OFF';
+      toggle.addEventListener('click', function(){ editMode = !editMode; toggle.textContent = editMode ? 'Editing: ON' : 'Editing: OFF'; renderTeacherView(currentTeacherView); });
+      var exportBtn = document.createElement('button'); exportBtn.type='button'; exportBtn.className='view-btn'; exportBtn.textContent='Export JSON';
+      exportBtn.addEventListener('click', function(){ try { downloadText(JSON.stringify(state.base, null, 2)); } catch(e){} });
+      wrap.appendChild(toggle); wrap.appendChild(exportBtn); host.appendChild(wrap);
     }
 
     function downloadText(text) {
