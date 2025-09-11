@@ -217,13 +217,25 @@
         if (matchTd && matchTd.classList){ matchTd.classList.add('active-cell'); activeCell = matchTd; }
       } catch(e) {}
     }
-    function markActiveTeacherByUrl(url){
+    function markActiveTeacherByUrl(url, label){
       try {
         var btns = document.querySelectorAll('#teacher-display .teacher-btn');
         if (activeTeacherBtn && activeTeacherBtn.classList) activeTeacherBtn.classList.remove('active');
-        for (var i=0;i<btns.length;i++){
-          if (btns[i].getAttribute('data-url') === url){ btns[i].classList.add('active'); activeTeacherBtn = btns[i]; break; }
+        var match = null;
+        // Prefer exact match on both URL and name when provided
+        if (label){
+          for (var j=0;j<btns.length;j++){
+            var b = btns[j];
+            if (b.getAttribute('data-url') === url && (b.getAttribute('data-name')||'') === label){ match = b; break; }
+          }
         }
+        // Fallback: first URL match
+        if (!match){
+          for (var i=0;i<btns.length;i++){
+            if (btns[i].getAttribute('data-url') === url){ match = btns[i]; break; }
+          }
+        }
+        if (match){ match.classList.add('active'); activeTeacherBtn = match; }
       } catch(e){}
     }
 
@@ -245,7 +257,7 @@
       } catch (e) {}
       addOrActivateTab(url, label || 'Slides');
       markActiveCellByUrl(url);
-      markActiveTeacherByUrl(url);
+      markActiveTeacherByUrl(url, label);
       // load/timeout handling
       var handled = false;
       var clear = function(){ if (handled) return; handled = true; try { if (loading) loading.classList.remove('active'); } catch(e){} };
@@ -379,6 +391,7 @@
       function teacherButton(entry, simple){
         var btn = document.createElement('button'); btn.className='teacher-btn';
         btn.setAttribute('data-url', entry.url||'');
+        btn.setAttribute('data-name', entry.name||'');
         btn.textContent = entry.name + ' ';
         var span = document.createElement('span');
         var tag = entry.label || entry.subject || entry.cohort || 'General';
@@ -386,7 +399,15 @@
         else if (entry.cohort) { span.className='cohort-tag'; span.textContent = tag; }
         btn.appendChild(span);
         if (entry.url){
-          btn.addEventListener('click', function(){ openViewer(entry.url, entry.name); });
+          btn.addEventListener('click', function(){
+            openViewer(entry.url, entry.name);
+            try {
+              var prev = document.querySelector('#teacher-display .teacher-btn.active');
+              if (prev) prev.classList.remove('active');
+              btn.classList.add('active');
+              activeTeacherBtn = btn;
+            } catch(e){}
+          });
         } else {
           btn.disabled = true; btn.title = 'No link provided';
         }
