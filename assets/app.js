@@ -596,9 +596,9 @@
       exportBtn.addEventListener('click', function(){ try { downloadText(JSON.stringify(state.base, null, 2)); } catch(e){} });
       var saveBtn = document.createElement('button'); saveBtn.type='button'; saveBtn.className='view-btn'; saveBtn.textContent='Save to GitHub';
       saveBtn.addEventListener('click', function(){ saveToGitHub(saveBtn); });
-      var tokenBtn = document.createElement('button'); tokenBtn.type='button'; tokenBtn.className='view-btn'; tokenBtn.textContent='Set Token';
-      tokenBtn.addEventListener('click', function(){ promptForToken(); });
-      wrap.appendChild(toggle); wrap.appendChild(exportBtn); wrap.appendChild(saveBtn); wrap.appendChild(tokenBtn); host.appendChild(wrap);
+      var settingsBtn = document.createElement('button'); settingsBtn.type='button'; settingsBtn.className='view-btn'; settingsBtn.textContent='Settings';
+      settingsBtn.addEventListener('click', function(){ openSettings(); });
+      wrap.appendChild(toggle); wrap.appendChild(exportBtn); wrap.appendChild(saveBtn); wrap.appendChild(settingsBtn); host.appendChild(wrap);
     }
 
     function downloadText(text) {
@@ -655,6 +655,43 @@
           .then(function(){ button.textContent = 'Saved!'; setTimeout(function(){ button.disabled = false; button.textContent = originalText; }, 1200); })
           .catch(function(err){ console.error(err); alert('Save failed: ' + err.message); button.disabled = false; button.textContent = originalText; });
       } catch(e){ alert('Save failed. See console for details.'); try { console.error(e); } catch(_){} }
+    }
+
+    // ---- Settings Modal ----
+    var settingsEl = null;
+    function openSettings(){
+      if (settingsEl){ settingsEl.style.display = 'flex'; refreshSettingsStatus(); return; }
+      settingsEl = document.createElement('div');
+      settingsEl.className = 'settings-overlay';
+      settingsEl.setAttribute('role','dialog');
+      settingsEl.setAttribute('aria-modal','true');
+      // Inline basic styles to avoid CSS edits
+      settingsEl.style.position='fixed'; settingsEl.style.inset='0'; settingsEl.style.background='rgba(0,0,0,0.4)';
+      settingsEl.style.display='flex'; settingsEl.style.alignItems='center'; settingsEl.style.justifyContent='center'; settingsEl.style.zIndex='1000';
+      var box = document.createElement('div'); box.className='settings-box';
+      box.style.background='#fff'; box.style.color='#111'; box.style.minWidth='320px'; box.style.maxWidth='520px'; box.style.borderRadius='8px';
+      box.style.boxShadow='0 10px 30px rgba(0,0,0,0.25)'; box.style.padding='16px'; box.style.fontSize='14px';
+      var h = document.createElement('h2'); h.textContent='Settings'; h.style.margin='0 0 8px'; box.appendChild(h);
+      var p = document.createElement('p'); p.textContent = 'Save to GitHub uses a token stored only in this browser. Use a fine-grained PAT limited to this repo (Contents: Read/Write). You can clear it anytime here.'; p.style.margin='0 0 8px'; box.appendChild(p);
+      var status = document.createElement('div'); status.id='settings-token-status'; status.style.margin='8px 0'; box.appendChild(status);
+      var row = document.createElement('div'); row.style.display='flex'; row.style.gap='8px'; row.style.flexWrap='wrap';
+      var setBtn = document.createElement('button'); setBtn.className='view-btn'; setBtn.textContent='Set Token'; setBtn.addEventListener('click', function(){ promptForToken(); refreshSettingsStatus(); });
+      var clearBtn = document.createElement('button'); clearBtn.className='view-btn'; clearBtn.textContent='Clear Token'; clearBtn.addEventListener('click', function(){ try { localStorage.removeItem('gh_token'); } catch(e){} refreshSettingsStatus(); });
+      var closeBtn = document.createElement('button'); closeBtn.className='view-btn'; closeBtn.textContent='Close'; closeBtn.addEventListener('click', function(){ closeSettings(); });
+      row.appendChild(setBtn); row.appendChild(clearBtn); row.appendChild(closeBtn); box.appendChild(row);
+      settingsEl.addEventListener('click', function(e){ if (e.target === settingsEl) closeSettings(); });
+      settingsEl.appendChild(box);
+      document.body.appendChild(settingsEl);
+      refreshSettingsStatus();
+    }
+    function closeSettings(){ if (settingsEl) settingsEl.style.display='none'; }
+    function maskToken(tok){ if (!tok) return '(not set)'; var t = tok.replace(/\s+/g,''); if (t.length<=8) return '••••'; return t.slice(0,4) + '•••' + t.slice(-4); }
+    function refreshSettingsStatus(){
+      try {
+        var el = document.getElementById('settings-token-status'); if (!el) return;
+        var tok = localStorage.getItem('gh_token') || '';
+        el.textContent = tok ? ('Token: ' + maskToken(tok) + ' — stored locally in this browser') : 'Token: (not set)';
+      } catch(e){}
     }
 
     // Try fetch; on failure (file://), use inline template
