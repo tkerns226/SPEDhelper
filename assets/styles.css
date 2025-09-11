@@ -1,27 +1,27 @@
-/* Modern WCAG 2.2 Compliant Color System */
+/* Black, Purple, and Gold Color System */
 :root {
-  /* Primary Colors - Blue palette for better accessibility */
-  --primary: #2563EB;
-  --primary-light: #3B82F6;
-  --primary-dark: #1D4ED8;
-  --primary-50: #EFF6FF;
-  --primary-100: #DBEAFE;
-  --primary-200: #BFDBFE;
+  /* Primary Colors - Purple palette */
+  --primary: #7C3AED;
+  --primary-light: #A855F7;
+  --primary-dark: #5B21B6;
+  --primary-50: #F3F0FF;
+  --primary-100: #E9E5FF;
+  --primary-200: #D4CDFF;
   
-  /* Accent Colors */
+  /* Accent Colors - Gold */
   --accent: #F59E0B;
   --accent-light: #FCD34D;
   --accent-dark: #D97706;
   
-  /* Neutral Colors */
-  --bg: #F8FAFC;
+  /* Neutral Colors - Black/White system */
+  --bg: #FAFBFC;
   --surface: #FFFFFF;
-  --surface-secondary: #F1F5F9;
-  --text: #0F172A;
-  --text-secondary: #475569;
-  --text-muted: #64748B;
-  --border: #E2E8F0;
-  --border-hover: #CBD5E1;
+  --surface-secondary: #F8F9FA;
+  --text: #000000;
+  --text-secondary: #1F2937;
+  --text-muted: #6B7280;
+  --border: #E5E7EB;
+  --border-hover: #D1D5DB;
   
   /* Semantic Colors */
   --success: #10B981;
