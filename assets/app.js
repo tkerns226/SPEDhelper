@@ -594,7 +594,11 @@
       toggle.addEventListener('click', function(){ editMode = !editMode; toggle.textContent = editMode ? 'Editing: ON' : 'Editing: OFF'; renderTeacherView(currentTeacherView); });
       var exportBtn = document.createElement('button'); exportBtn.type='button'; exportBtn.className='view-btn'; exportBtn.textContent='Export JSON';
       exportBtn.addEventListener('click', function(){ try { downloadText(JSON.stringify(state.base, null, 2)); } catch(e){} });
-      wrap.appendChild(toggle); wrap.appendChild(exportBtn); host.appendChild(wrap);
+      var saveBtn = document.createElement('button'); saveBtn.type='button'; saveBtn.className='view-btn'; saveBtn.textContent='Save to GitHub';
+      saveBtn.addEventListener('click', function(){ saveToGitHub(saveBtn); });
+      var tokenBtn = document.createElement('button'); tokenBtn.type='button'; tokenBtn.className='view-btn'; tokenBtn.textContent='Set Token';
+      tokenBtn.addEventListener('click', function(){ promptForToken(); });
+      wrap.appendChild(toggle); wrap.appendChild(exportBtn); wrap.appendChild(saveBtn); wrap.appendChild(tokenBtn); host.appendChild(wrap);
     }
 
     function downloadText(text) {
@@ -603,6 +607,54 @@
       a.href = URL.createObjectURL(blob);
       a.download = 'decks.updated.json';
       document.body.appendChild(a); a.click(); a.remove();
+    }
+
+    // ---- GitHub Save (client-side, requires a local token) ----
+    function getRepoConfig(){
+      // Adjust these if the repo moves
+      return { owner: 'tkerns226', repo: 'SPEDhelper', branch: 'main', path: 'assets/decks.json' };
+    }
+    function promptForToken(){
+      try {
+        var existing = localStorage.getItem('gh_token') || '';
+        var v = window.prompt('Paste GitHub token (repo contents: read/write for tkerns226/SPEDhelper). It stays only in this browser.', existing);
+        if (v !== null) { localStorage.setItem('gh_token', v.trim()); alert('Token saved locally to this browser.'); }
+      } catch(e){}
+    }
+    function b64encodeUtf8(str){
+      try { return btoa(unescape(encodeURIComponent(str))); } catch(e){ return btoa(str); }
+    }
+    function githubGetFileSha(cfg, token){
+      var url = 'https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo + '/contents/' + cfg.path + '?ref=' + encodeURIComponent(cfg.branch);
+      return fetch(url, { headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' }})
+        .then(function(res){ if (!res.ok) throw new Error('GET ' + res.status); return res.json(); })
+        .then(function(json){ return json.sha || ''; });
+    }
+    function githubPutFile(cfg, token, contentB64, sha, message){
+      var url = 'https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo + '/contents/' + cfg.path;
+      var body = { message: message, content: contentB64, branch: cfg.branch };
+      if (sha) body.sha = sha;
+      return fetch(url, {
+        method: 'PUT',
+        headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      }).then(function(res){ if (!res.ok) return res.json().then(function(j){ throw new Error('PUT ' + res.status + ' ' + (j.message||'')); }); return res.json(); });
+    }
+    function saveToGitHub(button){
+      try {
+        var cfg = getRepoConfig();
+        var token = '';
+        try { token = localStorage.getItem('gh_token') || ''; } catch(e){}
+        if (!token){ promptForToken(); try { token = localStorage.getItem('gh_token') || ''; } catch(e){} }
+        if (!token){ alert('No token set. Click Set Token and paste a fine-grained PAT.'); return; }
+        var json = JSON.stringify(state.base, null, 2);
+        var b64 = b64encodeUtf8(json);
+        var originalText = button.textContent; button.disabled = true; button.textContent = 'Saving...';
+        githubGetFileSha(cfg, token)
+          .then(function(sha){ return githubPutFile(cfg, token, b64, sha, 'Update decks.json via in-page editor'); })
+          .then(function(){ button.textContent = 'Saved!'; setTimeout(function(){ button.disabled = false; button.textContent = originalText; }, 1200); })
+          .catch(function(err){ console.error(err); alert('Save failed: ' + err.message); button.disabled = false; button.textContent = originalText; });
+      } catch(e){ alert('Save failed. See console for details.'); try { console.error(e); } catch(_){} }
     }
 
     // Try fetch; on failure (file://), use inline template
