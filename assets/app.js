@@ -208,6 +208,7 @@
     var activeTeacherBtn = null;
     var editMode = false;
     var currentTeacherView = 'subject';
+    var state = null; // holds current data for editor/export
     function markActiveCellByUrl(url){
       try {
         var links = document.querySelectorAll('#plans a.cell-link');
@@ -306,7 +307,7 @@
       var subjects = (base.order && base.order.subjects && base.order.subjects.length) ? base.order.subjects : DEFAULT_SUBJECTS;
       var cohorts = (base.order && base.order.cohorts && base.order.cohorts.length) ? base.order.cohorts : DEFAULT_COHORTS;
       var merged = base; // no local overrides
-      var state = { base: base, merged: merged, subjects: subjects, cohorts: cohorts };
+      state = { base: base, merged: merged, subjects: subjects, cohorts: cohorts };
       render(state);
 
       // Intercept table link clicks to open in the side viewer
@@ -531,6 +532,8 @@
         buttons.forEach(function(x){ if (x.getAttribute('data-view')===saved) x.classList.add('active'); else x.classList.remove('active'); });
         renderTeacherView(saved);
       }
+      // Add editor controls (Edit toggle + Export)
+      injectEditorControls();
 
       // Auto-open last viewed or first available link in the viewer
       var lastUrl = null, lastLabel = null;
