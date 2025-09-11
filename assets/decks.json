@@ -5,23 +5,35 @@
   },
   "plans": {
     "7A": {
-      "Math": { "name": "Beck" },
-      "Science": { "name": "Gongaware" },
+      "Math": [
+        { "name": "Beck", "subject": "Integrated 1", "url": "https://docs.google.com/presentation/d/1_Bf7iXMNtWefGPa39vpvNJcawtPMvhKQtkuZaQ4Hc80/edit?usp=sharing" },
+        { "name": "Beck", "subject": "Math 7", "url": "https://docs.google.com/presentation/d/1cCQMO6t-Ddk0Zs6ptmSJ8PVMyFFlf6MPgp5UaA2axq8/edit?usp=sharing" },
+        { "name": "Beck", "subject": "Math 7/8", "url": "https://docs.google.com/presentation/d/1VjTL2iRs259MUNvQgxylx-W95zDyKwH9Ue-_OG5RO88/edit?usp=sharing" }
+      ],
+      "Science": { "name": "Gongaware", "url": "https://docs.google.com/presentation/d/1-dZ8LGl7Qhd6iXllZ7178Bcnf5gh4gHTQpYFR_qFMsE/edit?usp=sharing_eip&ts=68c2e466" },
       "STEM": null,
-      "ELA": { "name": "Glah" },
-      "SS": { "name": "Healy" },
+      "ELA": { "name": "Glah", "url": "https://docs.google.com/presentation/d/e/2PACX-1vQB0bECf7pWKykRq83mkD3BQGP5SxlqXPnZwCZVrNmT388OJBQJjD5OmTLvALVknQQzUdF4a1Ygjx0t/pub?start=false&loop=false&delayms=3000&slide=id.g36f1ed2af32_0_0" },
+      "SS": { "name": "Healy", "url": "https://docs.google.com/presentation/d/1SzYFSaTGeO28rzvRBXgDUZOGrLBM_GrgBdN38e5hMTQ/edit?slide=id.g348d632ce06_0_0#slide=id.g348d632ce06_0_0" },
       "Humanities": null
     },
     "7B": {
-      "Math": { "name": "Mazur" },
-      "Science": { "name": "Epting" },
+      "Math": [
+        { "name": "Mazur", "subject": "Integrated 1", "url": "https://docs.google.com/presentation/d/1_Bf7iXMNtWefGPa39vpvNJcawtPMvhKQtkuZaQ4Hc80/edit?usp=sharing" },
+        { "name": "Mazur", "subject": "Math 7", "url": "https://docs.google.com/presentation/d/1cCQMO6t-Ddk0Zs6ptmSJ8PVMyFFlf6MPgp5UaA2axq8/edit?usp=sharing" },
+        { "name": "Mazur", "subject": "Math 7/8", "url": "https://docs.google.com/presentation/d/1VjTL2iRs259MUNvQgxylx-W95zDyKwH9Ue-_OG5RO88/edit?usp=sharing" }
+      ],
+      "Science": { "name": "Epting", "url": "https://docs.google.com/presentation/d/1e56txAU3Zpf1jNLOxkGiNwISgBYk7oLd2AiYshQ9gCk/edit?usp=sharing" },
       "STEM": null,
-      "ELA": { "name": "Groen" },
-      "SS": { "name": "Lamey" },
+      "ELA": { "name": "Groen", "url": "https://docs.google.com/presentation/d/1o-JB6957fONAPq1rPi_z1dNvz0lPnKBkOJdysEr2xX4/pub?start=false&loop=true&delayms=3000&slide=id.g377ddd112a4_0_21" },
+      "SS": { "name": "Lamey", "url": "https://docs.google.com/presentation/d/14tOgDbJs3CEsIA0JYqI-sYMtlxY9FBVlwaoyT85_4h0/pub?start=false&loop=true&delayms=3000&slide=id.g2d303ff67a8_0_0" },
       "Humanities": null
     },
     "7C": {
-      "Math": { "name": "Heibeck" },
+      "Math": [
+        { "name": "Heibeck", "subject": "Integrated 1", "url": "https://docs.google.com/presentation/d/1IIzuRhE9eJQFB2YdkQ37Ol_OxfmebKTnN8KTJsnX0qg/edit?usp=sharing_eip&ts=68c18f11" },
+        { "name": "Heibeck", "subject": "Math 7", "url": "https://docs.google.com/presentation/d/1eXf2uPBMDPRcHTajlfa3DDn3NfLo4mIf7lgBQat-Zog/edit?usp=sharing_eip&ts=68c18f20" },
+        { "name": "Heibeck", "subject": "Math 7/8", "url": "https://docs.google.com/presentation/d/1ilQHZ6tWl23VQnqudGRT9ot_qj5aOkjkGV7W-T5VmMQ/edit?usp=sharing_eip&ts=68c18f36" }
+      ],
       "Science": { "name": "Wire" },
       "STEM": null,
       "ELA": { "name": "Ekert", "url": "https://docs.google.com/presentation/d/1nNtgPVRzqZcSpiTK_AwIbR9PsRi74YwAHqWvxb-rzs0/edit?slide=id.g28aa5cf232f_0_5#slide=id.g28aa5cf232f_0_5" },
@@ -33,15 +45,17 @@
       "Science": null,
       "STEM": [
         { "name": "Moser", "subject": "FCS" },
-        { "name": "Hemberger", "subject": "Computers" },
-        { "name": "Lapinski", "subject": "Tech" }
+        { "name": "Hemberger", "subject": "Computers", "url": "https://docs.google.com/presentation/d/1anlS1s9mx3bMjAv5SzNQj93UcwsbSgwmwskmxwkKTBo/edit?slide=id.g37aecd2f921_0_2777#slide=id.g37aecd2f921_0_2777" },
+        { "name": "Lapinski", "subject": "Tech" },
+        { "name": "Quinn", "subject": "Computers", "url": "https://docs.google.com/presentation/d/1t66TNC2EBzYyjBoSpailXOg_c9dtdDOASKnczvfKln0/pub?start=false&loop=true&delayms=3000&slide=id.g37ac11ba4ea_0_0" }
       ],
       "ELA": null,
       "SS": null,
       "Humanities": [
         { "name": "Arnold-Schwartz", "subject": "Communications" },
         { "name": "Levin", "subject": "Communications" },
-        { "name": "Messick", "subject": "Art", "url": "https://docs.google.com/presentation/d/12xnPA-JHOHYdbw1BsNZt0-yN8kXOKXTjUYcj1JGSAec/pub?start=false&loop=true&delayms=3000#slide=id.g33afbd6ded2_0_0" }
+        { "name": "Messick", "subject": "Art", "url": "https://docs.google.com/presentation/d/12xnPA-JHOHYdbw1BsNZt0-yN8kXOKXTjUYcj1JGSAec/pub?start=false&loop=true&delayms=3000#slide=id.g33afbd6ded2_0_0" },
+        { "name": "Fazzini", "subject": "Art", "url": "https://docs.google.com/presentation/d/17aBWox8XN2jSJh4TRWky7oybDSNt25x0IBu86pA1kWY/pub?start=false&loop=false&delayms=3000&slide=id.g2c81073916e_0_2" }
       ]
     }
   }
