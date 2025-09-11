@@ -624,11 +624,14 @@
     function b64encodeUtf8(str){
       try { return btoa(unescape(encodeURIComponent(str))); } catch(e){ return btoa(str); }
     }
-    function githubGetFileSha(cfg, token){
+    function b64decodeUtf8(b64){
+      try { return decodeURIComponent(escape(atob(b64))); } catch(e){ return atob(b64); }
+    }
+    function githubGetFile(cfg, token){
       var url = 'https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo + '/contents/' + cfg.path + '?ref=' + encodeURIComponent(cfg.branch);
       return fetch(url, { headers: { 'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json' }})
         .then(function(res){ if (!res.ok) throw new Error('GET ' + res.status); return res.json(); })
-        .then(function(json){ return json.sha || ''; });
+        .then(function(json){ return { sha: json.sha || '', content: json.content || '', encoding: json.encoding || 'base64' }; });
     }
     function githubPutFile(cfg, token, contentB64, sha, message){
       var url = 'https://api.github.com/repos/' + cfg.owner + '/' + cfg.repo + '/contents/' + cfg.path;
@@ -649,12 +652,44 @@
         if (!token){ alert('No token set. Click Set Token and paste a fine-grained PAT.'); return; }
         var json = JSON.stringify(state.base, null, 2);
         var b64 = b64encodeUtf8(json);
-        var originalText = button.textContent; button.disabled = true; button.textContent = 'Saving...';
-        githubGetFileSha(cfg, token)
-          .then(function(sha){ return githubPutFile(cfg, token, b64, sha, 'Update decks.json via in-page editor'); })
+        var originalText = button.textContent; button.disabled = true; button.textContent = 'Saving (1/2)...';
+        // 1) Save assets/decks.json
+        githubGetFile(cfg, token)
+          .then(function(info){ return githubPutFile(cfg, token, b64, info.sha, 'Update decks.json via in-page editor'); })
+          .then(function(){
+            // 2) Save inline fallback in index.html
+            button.textContent = 'Saving (2/2)...';
+            var cfgHtml = { owner: cfg.owner, repo: cfg.repo, branch: cfg.branch, path: 'index.html' };
+            return githubGetFile(cfgHtml, token).then(function(info){
+              var htmlText = (info.encoding === 'base64') ? b64decodeUtf8(info.content) : info.content;
+              var updated = updateInlineTemplate(htmlText, json);
+              if (!updated.ok) throw new Error(updated.error || 'Could not update inline fallback JSON');
+              var htmlB64 = b64encodeUtf8(updated.text);
+              return githubPutFile(cfgHtml, token, htmlB64, info.sha, 'Update inline fallback JSON via in-page editor');
+            });
+          })
           .then(function(){ button.textContent = 'Saved!'; setTimeout(function(){ button.disabled = false; button.textContent = originalText; }, 1200); })
           .catch(function(err){ console.error(err); alert('Save failed: ' + err.message); button.disabled = false; button.textContent = originalText; });
       } catch(e){ alert('Save failed. See console for details.'); try { console.error(e); } catch(_){} }
+    }
+
+    function updateInlineTemplate(htmlText, jsonText){
+      try {
+        var startTag = '<template id="decks-data">';
+        var endTag = '</template>';
+        var start = htmlText.indexOf(startTag);
+        if (start === -1) return { ok:false, error: 'Inline template start not found' };
+        var afterStart = start + startTag.length;
+        var end = htmlText.indexOf(endTag, afterStart);
+        if (end === -1) return { ok:false, error: 'Inline template end not found' };
+        var before = htmlText.slice(0, afterStart);
+        // Preserve indentation after the start tag if present
+        var indentMatch = htmlText.slice(0, start).match(/(^|\n)([ \t]*)$/);
+        var indent = indentMatch ? indentMatch[2] : '';
+        var between = '\n' + jsonText + '\n' + indent;
+        var after = htmlText.slice(end);
+        return { ok:true, text: before + between + after };
+      } catch(e){ return { ok:false, error: e && e.message ? e.message : 'update error' }; }
     }
 
     // ---- Settings Modal ----
