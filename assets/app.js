@@ -347,24 +347,28 @@
           var cohort = cohorts[ci];
           var row = merged.plans && merged.plans[cohort] ? merged.plans[cohort] : {};
           for (var si=0; si<subjects.length; si++){
-            var subj = subjects[si];
+            var subj = subjects[si]; // subject category (e.g., Math, Science, ...)
             var val = row[subj];
             if (!val) continue;
-            var pushItem = function(name, url, actualSubj){ list.push({ name:name, url:url||'', cohort:cohort, subject:actualSubj||subj }); };
+            // Store grouping subject as the category, and keep any finer-grained label (e.g., course name)
+            var pushItem = function(name, url, label){ list.push({ name: name, url: url || '', cohort: cohort, subject: subj, label: label || '' }); };
             if (Array.isArray(val)) {
               for (var vi=0; vi<val.length; vi++){
                 var it = val[vi];
-                if (typeof it === 'string') { if (it.trim()) pushItem(it.trim(), ''); }
-                else if (it && typeof it === 'object') pushItem(it.name||'', it.url||'', it.subject||'');
+                if (typeof it === 'string') {
+                  var trimmed = it.trim(); if (trimmed) pushItem(trimmed, '', '');
+                } else if (it && typeof it === 'object') {
+                  pushItem(it.name || '', it.url || '', it.subject || '');
+                }
               }
             } else if (typeof val === 'object') {
-              pushItem(val.name||'', val.url||'', val.subject||'');
+              pushItem(val.name || '', val.url || '', val.subject || '');
             } else if (typeof val === 'string') {
               if (val.indexOf(',') !== -1) {
                 var parts = val.split(',');
-                for (var pj=0; pj<parts.length; pj++){ var nm = parts[pj].trim(); if (nm) pushItem(nm, ''); }
+                for (var pj=0; pj<parts.length; pj++){ var nm = parts[pj].trim(); if (nm) pushItem(nm, '', ''); }
               } else if (val.trim()) {
-                pushItem(val.trim(), '');
+                pushItem(val.trim(), '', '');
               }
             }
           }
@@ -377,8 +381,9 @@
         btn.setAttribute('data-url', entry.url||'');
         btn.textContent = entry.name + ' ';
         var span = document.createElement('span');
-        if (simple) { span.className='detail-tag'; span.textContent = entry.cohort + ' ' + (entry.subject || 'General'); }
-        else if (entry.cohort) { span.className='cohort-tag'; span.textContent = entry.subject || entry.cohort; }
+        var tag = entry.label || entry.subject || entry.cohort || 'General';
+        if (simple) { span.className='detail-tag'; span.textContent = entry.cohort + ' ' + tag; }
+        else if (entry.cohort) { span.className='cohort-tag'; span.textContent = tag; }
         btn.appendChild(span);
         if (entry.url){
           btn.addEventListener('click', function(){ openViewer(entry.url, entry.name); });
@@ -396,8 +401,9 @@
         var bySubject = {}; var byCohort = {};
         for (var i=0;i<data.length;i++){
           var e = data[i];
-          if (!bySubject[e.subject]) bySubject[e.subject] = [];
-          bySubject[e.subject].push(e);
+          var key = e.subject || 'Other';
+          if (!bySubject[key]) bySubject[key] = [];
+          bySubject[key].push(e);
           if (!byCohort[e.cohort]) byCohort[e.cohort] = [];
           byCohort[e.cohort].push(e);
         }
