@@ -417,7 +417,8 @@
         if (editMode) {
           var edit = document.createElement('button');
           edit.type='button'; edit.className='mini-edit-btn'; edit.textContent='Edit';
-          edit.addEventListener('click', function(ev){ ev.stopPropagation(); editEntry(entry); });
+          edit.style.marginLeft = '6px';
+          edit.addEventListener('click', function(ev){ ev.stopPropagation(); editEntryUrl(entry); });
           btn.appendChild(edit);
         }
         return btn;
@@ -586,10 +587,47 @@
       } catch(e){}
     }
 
+    function editEntryUrl(entry){
+      try {
+        var cohort = entry.cohort; var subj = entry.subject;
+        var row = state.base.plans && state.base.plans[cohort] ? state.base.plans[cohort] : null;
+        if (!row) return;
+        var cell = row[subj];
+        var curUrl = entry.url || '';
+        var url = window.prompt('Slide URL (Google Slides preferred)', curUrl);
+        if (url===null) return;
+        function updatedObject(orig){
+          var obj = { name: (orig && orig.name) || entry.name || '', url: url };
+          var label = (orig && orig.subject) || entry.label || '';
+          if (label) obj.subject = label;
+          return obj;
+        }
+        if (Array.isArray(cell)){
+          var idx = (typeof entry._index==='number') ? entry._index : 0;
+          var orig = cell[idx];
+          cell[idx] = updatedObject(orig);
+        } else if (cell && typeof cell === 'object') {
+          row[subj] = updatedObject(cell);
+        } else {
+          row[subj] = updatedObject(null);
+        }
+        // re-render
+        render(state);
+        renderTeacherView(currentTeacherView);
+      } catch(e){}
+    }
+
     function injectEditorControls(){
-      var host = document.querySelector('.view-toggle-buttons');
-      if (!host) return;
-      var wrap = document.createElement('div'); wrap.className='editor-controls'; wrap.style.display='inline-flex'; wrap.style.gap='8px'; wrap.style.marginLeft='8px';
+      // Create a dedicated top controls row above the sorting buttons
+      var listContainer = document.getElementById('teacher-list');
+      if (!listContainer) return;
+      var existing = document.querySelector('.editor-top-controls');
+      if (existing) existing.remove();
+      var top = document.createElement('div');
+      top.className = 'editor-top-controls';
+      top.style.display = 'block';
+      top.style.margin = '0 0 10px 0';
+      var wrap = document.createElement('div'); wrap.className='editor-controls'; wrap.style.display='inline-flex'; wrap.style.gap='8px';
       var toggle = document.createElement('button'); toggle.type='button'; toggle.className='view-btn'; toggle.textContent = editMode ? 'Editing: ON' : 'Editing: OFF';
       toggle.addEventListener('click', function(){ editMode = !editMode; toggle.textContent = editMode ? 'Editing: ON' : 'Editing: OFF'; renderTeacherView(currentTeacherView); });
       var exportBtn = document.createElement('button'); exportBtn.type='button'; exportBtn.className='view-btn'; exportBtn.textContent='Export JSON';
@@ -598,7 +636,15 @@
       saveBtn.addEventListener('click', function(){ saveToGitHub(saveBtn); });
       var settingsBtn = document.createElement('button'); settingsBtn.type='button'; settingsBtn.className='view-btn'; settingsBtn.textContent='Settings';
       settingsBtn.addEventListener('click', function(){ openSettings(); });
-      wrap.appendChild(toggle); wrap.appendChild(exportBtn); wrap.appendChild(saveBtn); wrap.appendChild(settingsBtn); host.appendChild(wrap);
+      wrap.appendChild(toggle); wrap.appendChild(exportBtn); wrap.appendChild(saveBtn); wrap.appendChild(settingsBtn);
+      top.appendChild(wrap);
+      // Insert before the sorting buttons row
+      var sortRow = document.querySelector('.view-toggle-buttons');
+      if (sortRow && sortRow.parentNode === listContainer) {
+        listContainer.insertBefore(top, sortRow);
+      } else {
+        listContainer.prepend(top);
+      }
     }
 
     function downloadText(text) {
