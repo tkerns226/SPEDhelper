@@ -628,14 +628,15 @@
       top.style.display = 'block';
       top.style.margin = '0 0 10px 0';
       var wrap = document.createElement('div'); wrap.className='editor-controls'; wrap.style.display='inline-flex'; wrap.style.gap='8px';
+      function confirmProceed(){ return window.confirm('Do you really know what you are doing, or do you need Tim?'); }
       var toggle = document.createElement('button'); toggle.type='button'; toggle.className='view-btn'; toggle.textContent = editMode ? 'Editing: ON' : 'Editing: OFF';
-      toggle.addEventListener('click', function(){ editMode = !editMode; toggle.textContent = editMode ? 'Editing: ON' : 'Editing: OFF'; renderTeacherView(currentTeacherView); });
+      toggle.addEventListener('click', function(){ if (!confirmProceed()) return; editMode = !editMode; toggle.textContent = editMode ? 'Editing: ON' : 'Editing: OFF'; renderTeacherView(currentTeacherView); });
       var exportBtn = document.createElement('button'); exportBtn.type='button'; exportBtn.className='view-btn'; exportBtn.textContent='Export JSON';
-      exportBtn.addEventListener('click', function(){ try { downloadText(JSON.stringify(state.base, null, 2)); } catch(e){} });
+      exportBtn.addEventListener('click', function(){ if (!confirmProceed()) return; try { downloadText(JSON.stringify(state.base, null, 2)); } catch(e){} });
       var saveBtn = document.createElement('button'); saveBtn.type='button'; saveBtn.className='view-btn'; saveBtn.textContent='Save to GitHub';
-      saveBtn.addEventListener('click', function(){ saveToGitHub(saveBtn); });
+      saveBtn.addEventListener('click', function(){ if (!confirmProceed()) return; saveToGitHub(saveBtn); });
       var settingsBtn = document.createElement('button'); settingsBtn.type='button'; settingsBtn.className='view-btn'; settingsBtn.textContent='Settings';
-      settingsBtn.addEventListener('click', function(){ openSettings(); });
+      settingsBtn.addEventListener('click', function(){ if (!confirmProceed()) return; openSettings(); });
       wrap.appendChild(toggle); wrap.appendChild(exportBtn); wrap.appendChild(saveBtn); wrap.appendChild(settingsBtn);
       top.appendChild(wrap);
       // Insert before the sorting buttons row
