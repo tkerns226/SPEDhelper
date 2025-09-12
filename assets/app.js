@@ -693,12 +693,22 @@
     }
     function saveToGitHub(button){
       try {
+        // If a server endpoint is configured, prefer it (no token needed for users)
+        var endpoint = (typeof window !== 'undefined' && window.SAVE_ENDPOINT) ? String(window.SAVE_ENDPOINT) : '';
+        var json = JSON.stringify(state.base, null, 2);
+        if (endpoint) {
+          var originalText1 = button.textContent; button.disabled = true; button.textContent = 'Saving...';
+          fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ json: json, message: 'Update decks via SPEDhelper editor' }) })
+            .then(function(res){ if (!res.ok) throw new Error('Server save failed: ' + res.status); return res.json(); })
+            .then(function(){ button.textContent = 'Saved!'; setTimeout(function(){ button.disabled = false; button.textContent = originalText1; }, 1200); })
+            .catch(function(err){ alert(err.message || 'Save failed'); button.disabled = false; button.textContent = originalText1; });
+          return;
+        }
         var cfg = getRepoConfig();
         var token = '';
         try { token = localStorage.getItem('gh_token') || ''; } catch(e){}
         if (!token){ promptForToken(); try { token = localStorage.getItem('gh_token') || ''; } catch(e){} }
         if (!token){ alert('No token set. Click Set Token and paste a fine-grained PAT.'); return; }
-        var json = JSON.stringify(state.base, null, 2);
         var b64 = b64encodeUtf8(json);
         var originalText = button.textContent; button.disabled = true; button.textContent = 'Saving (1/2)...';
         // 1) Save assets/decks.json
@@ -755,13 +765,21 @@
       box.style.background='#fff'; box.style.color='#111'; box.style.minWidth='320px'; box.style.maxWidth='520px'; box.style.borderRadius='8px';
       box.style.boxShadow='0 10px 30px rgba(0,0,0,0.25)'; box.style.padding='16px'; box.style.fontSize='14px';
       var h = document.createElement('h2'); h.textContent='Settings'; h.style.margin='0 0 8px'; box.appendChild(h);
-      var p = document.createElement('p'); p.textContent = 'Save to GitHub uses a token stored only in this browser. Use a fine-grained PAT limited to this repo (Contents: Read/Write). You can clear it anytime here.'; p.style.margin='0 0 8px'; box.appendChild(p);
+      var p = document.createElement('p');
+      var hasEndpoint = (typeof window !== 'undefined' && window.SAVE_ENDPOINT) ? String(window.SAVE_ENDPOINT).length > 0 : false;
+      p.textContent = hasEndpoint ?
+        'This site saves using a secure server endpoint. No token is needed on this computer.' :
+        'Save to GitHub uses a token stored only in this browser. Use a fine-grained PAT limited to this repo (Contents: Read/Write). You can clear it anytime here.';
+      p.style.margin='0 0 8px'; box.appendChild(p);
       var status = document.createElement('div'); status.id='settings-token-status'; status.style.margin='8px 0'; box.appendChild(status);
       var row = document.createElement('div'); row.style.display='flex'; row.style.gap='8px'; row.style.flexWrap='wrap';
-      var setBtn = document.createElement('button'); setBtn.className='view-btn'; setBtn.textContent='Set Token'; setBtn.addEventListener('click', function(){ promptForToken(); refreshSettingsStatus(); });
-      var clearBtn = document.createElement('button'); clearBtn.className='view-btn'; clearBtn.textContent='Clear Token'; clearBtn.addEventListener('click', function(){ try { localStorage.removeItem('gh_token'); } catch(e){} refreshSettingsStatus(); });
+      if (!hasEndpoint) {
+        var setBtn = document.createElement('button'); setBtn.className='view-btn'; setBtn.textContent='Set Token'; setBtn.addEventListener('click', function(){ promptForToken(); refreshSettingsStatus(); });
+        var clearBtn = document.createElement('button'); clearBtn.className='view-btn'; clearBtn.textContent='Clear Token'; clearBtn.addEventListener('click', function(){ try { localStorage.removeItem('gh_token'); } catch(e){} refreshSettingsStatus(); });
+        row.appendChild(setBtn); row.appendChild(clearBtn);
+      }
       var closeBtn = document.createElement('button'); closeBtn.className='view-btn'; closeBtn.textContent='Close'; closeBtn.addEventListener('click', function(){ closeSettings(); });
-      row.appendChild(setBtn); row.appendChild(clearBtn); row.appendChild(closeBtn); box.appendChild(row);
+      row.appendChild(closeBtn); box.appendChild(row);
       settingsEl.addEventListener('click', function(e){ if (e.target === settingsEl) closeSettings(); });
       settingsEl.appendChild(box);
       document.body.appendChild(settingsEl);
@@ -772,6 +790,8 @@
     function refreshSettingsStatus(){
       try {
         var el = document.getElementById('settings-token-status'); if (!el) return;
+        var hasEndpoint = (typeof window !== 'undefined' && window.SAVE_ENDPOINT) ? String(window.SAVE_ENDPOINT).length > 0 : false;
+        if (hasEndpoint) { el.textContent = 'Server save enabled — no token required'; return; }
         var tok = localStorage.getItem('gh_token') || '';
         el.textContent = tok ? ('Token: ' + maskToken(tok) + ' — stored locally in this browser') : 'Token: (not set)';
       } catch(e){}
