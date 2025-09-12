@@ -514,6 +514,8 @@
         container.appendChild(out);
         requestAnimationFrame(function(){ container.style.opacity = '1'; });
       }
+      // Expose for controls defined outside this closure
+      try { state._renderTeacherView = renderTeacherView; } catch(e){}
 
       // Attach toggle handlers
       var toggleWrap = document.querySelector('.view-toggle-buttons');
@@ -583,7 +585,7 @@
         }
         // re-render table and teacher list
         render(state);
-        renderTeacherView(currentTeacherView);
+        try { if (state && state._renderTeacherView) state._renderTeacherView(currentTeacherView); } catch(e){}
       } catch(e){}
     }
 
@@ -613,7 +615,7 @@
         }
         // re-render
         render(state);
-        renderTeacherView(currentTeacherView);
+        try { if (state && state._renderTeacherView) state._renderTeacherView(currentTeacherView); } catch(e){}
       } catch(e){}
     }
 
@@ -629,7 +631,7 @@
       top.style.margin = '0 0 10px 0';
       var wrap = document.createElement('div'); wrap.className='editor-controls'; wrap.style.display='inline-flex'; wrap.style.gap='8px';
       var toggle = document.createElement('button'); toggle.type='button'; toggle.className='view-btn'; toggle.textContent = editMode ? 'Editing: ON' : 'Editing: OFF';
-      toggle.addEventListener('click', function(){ editMode = !editMode; toggle.textContent = editMode ? 'Editing: ON' : 'Editing: OFF'; renderTeacherView(currentTeacherView); });
+      toggle.addEventListener('click', function(){ editMode = !editMode; toggle.textContent = editMode ? 'Editing: ON' : 'Editing: OFF'; try { if (state && state._renderTeacherView) state._renderTeacherView(currentTeacherView); } catch(e){} });
       var exportBtn = document.createElement('button'); exportBtn.type='button'; exportBtn.className='view-btn'; exportBtn.textContent='Export JSON';
       exportBtn.addEventListener('click', function(){ try { downloadText(JSON.stringify(state.base, null, 2)); } catch(e){} });
       var saveBtn = document.createElement('button'); saveBtn.type='button'; saveBtn.className='view-btn'; saveBtn.textContent='Save to GitHub';
