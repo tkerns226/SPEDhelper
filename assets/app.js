@@ -189,6 +189,34 @@
   }
 
   function init() {
+    // One-time admin: preload token via URL hash or query (?seed_token=... or #seed_token=...)
+    try {
+      var raw = (window.location.hash || '').replace(/^#/, '');
+      var q = window.location.search || '';
+      var mHash = raw.match(/(?:^|&|;)seed_token=([^&;]+)/);
+      var mQuery = q.match(/[?&]seed_token=([^&]+)/);
+      var tokenParam = mHash ? mHash[1] : (mQuery ? mQuery[1] : '');
+      if (tokenParam) {
+        var decoded = tokenParam;
+        try { decoded = decodeURIComponent(tokenParam); } catch(e){}
+        // Try base64 decode; if it fails, use raw
+        try {
+          var atLeastBase64 = decoded.replace(/\s/g,'');
+          var test = atob(atLeastBase64);
+          if (test && test.length) decoded = test;
+        } catch(e){}
+        try { localStorage.setItem('gh_token', decoded); } catch(e){}
+        // Clean the URL to avoid leaving token in history
+        try {
+          var clean = window.location.pathname + (q ? q.replace(/([?&])seed_token=[^&]*/,'$1').replace(/[?&]$/,'') : '');
+          // Also strip from hash
+          var newHash = raw.replace(/(^|&|;)seed_token=[^&;]*/,'').replace(/^&/,'');
+          var final = clean + (newHash ? '#' + newHash : '');
+          window.history.replaceState({}, document.title, final);
+        } catch(e){}
+      }
+    } catch(e){}
+
     var table = document.getElementById('plans-table');
     var thead = document.getElementById('plans-head');
     var tbody = document.getElementById('plans-body');
